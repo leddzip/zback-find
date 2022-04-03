@@ -1,0 +1,117 @@
+version: 2.1
+
+#==============================================================================
+# Executors
+#==============================================================================
+executors:
+  go:
+    docker:
+      - image: cimg/go:1.16
+        auth:
+          username: $MY_CIRCLECI_DOCKERHUB_USERNAME
+          password: $MY_CIRCLECI_DOCKERHUB_PASSWORD
+    working_directory: /tmp
+  github:
+    docker:
+      - image: leddzip/github-gh-cli:20.04
+        auth:
+          username: $MY_CIRCLECI_DOCKERHUB_USERNAME
+          password: $MY_CIRCLECI_DOCKERHUB_PASSWORD
+    working_directory: /tmp
+
+#==============================================================================
+# Contexts
+#==============================================================================
+docker_context: &docker_context
+  context:
+    - Leddzip Dockerhub
+
+docker_and_gh_context: &docker_and_gh_context
+  context:
+    - Leddzip Dockerhub
+    - Albert Bot GH Release Token
+
+#==============================================================================
+# Filters
+#==============================================================================
+release_tag_filter: &release_tag_filter
+  filters:
+    branches:
+      ignore: /.*/
+    tags:
+      only: /\d+\.\d+\.\d+/
+
+#==============================================================================
+# Commands
+#==============================================================================
+
+#==============================================================================
+# Jobs
+#==============================================================================
+jobs:
+  build:
+    executor: go
+    parameters:
+      os:
+        description: cross compilation OS target
+        type: enum
+        default: "linux"
+        enum: [ "linux", "darwin" ]
+      arch:
+        description: cross compilation Arch target
+        type: enum
+        default: "amd64"
+        enum: ["arm64", "amd64"]
+    steps:
+      - checkout
+      - run: mkdir -p workspace
+      - run: |
+          env GOOS=<<parameters.os>> GOARCH=<<parameters.arch>> go build -o zback-find
+          tar -czf zback-find_<<parameters.os>>_<<parameters.arch>>.tar.gz zback-find README.md LICENSE CHANGELOG.md
+          mv zback-find_<<parameters.os>>_<<parameters.arch>>.tar.gz > workspace/zback-find_<<parameters.os>>_<<parameters.arch>>.tar.gz
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - zback-find_<<parameters.os>>_<<parameters.arch>>.tar.gz
+
+  release:
+    executor: github
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: |
+          export GH_TOKEN=$ALBERT_BOT_GH_TOKEN_SCOPE_REPO
+          gh release create $CIRCLE_TAG --notes "Automatic release"
+          gh release upload $CIRCLE_TAG /tmp/workspace/zback-find* 
+
+#==============================================================================
+# Workflows
+#==============================================================================
+workflows:
+  "Build and deploy":
+    jobs:
+      - build:
+          name: linux_amd64
+          <<: *docker_context
+          <<: *release_tag_filter
+          os: "linux"
+          arch: "amd64"
+      - build:
+          name: darwin_amd64
+          <<: *docker_context
+          <<: *release_tag_filter
+          os: "darwin"
+          arch: "amd64"
+      - build:
+          name: darwin_arm64
+          <<: *docker_context
+          <<: *release_tag_filter
+          os: "darwin"
+          arch: "arm64"
+      - release:
+          <<: *docker_and_gh_context
+          <<: *release_tag_filter
+          requires:
+            - linux_amd64
+            - darwin_amd64
+            - darwin_arm64
