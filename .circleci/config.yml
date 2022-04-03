@@ -10,14 +10,14 @@ executors:
         auth:
           username: $MY_CIRCLECI_DOCKERHUB_USERNAME
           password: $MY_CIRCLECI_DOCKERHUB_PASSWORD
-    working_directory: /tmp
+    working_directory: /tmp/project
   github:
     docker:
       - image: leddzip/github-gh-cli:20.04
         auth:
           username: $MY_CIRCLECI_DOCKERHUB_USERNAME
           password: $MY_CIRCLECI_DOCKERHUB_PASSWORD
-    working_directory: /tmp
+    working_directory: /tmp/project
 
 #==============================================================================
 # Contexts
@@ -78,7 +78,7 @@ jobs:
     executor: github
     steps:
       - attach_workspace:
-          at: /tmp/workspace
+          at: /tmp/project/workspace
       - run: |
           export GH_TOKEN=$ALBERT_BOT_GH_TOKEN_SCOPE_REPO
           gh release create $CIRCLE_TAG --notes "Automatic release"
