@@ -77,11 +77,10 @@ jobs:
   release:
     executor: github
     steps:
+      - checkout
       - attach_workspace:
           at: /tmp/project/workspace
       - run: |
-          pwd
-          ls -la
           export GH_TOKEN=$ALBERT_BOT_GH_TOKEN_SCOPE_REPO_BACK_FIND
           gh release create $CIRCLE_TAG --notes "Automatic release"
           gh release upload $CIRCLE_TAG /tmp/workspace/zback-find* 
