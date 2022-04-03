@@ -68,7 +68,7 @@ jobs:
       - run: |
           env GOOS=<<parameters.os>> GOARCH=<<parameters.arch>> go build -o zback-find
           tar -czf zback-find_<<parameters.os>>_<<parameters.arch>>.tar.gz zback-find README.md LICENSE CHANGELOG.md
-          mv zback-find_<<parameters.os>>_<<parameters.arch>>.tar.gz > workspace/zback-find_<<parameters.os>>_<<parameters.arch>>.tar.gz
+          mv zback-find_<<parameters.os>>_<<parameters.arch>>.tar.gz workspace/zback-find_<<parameters.os>>_<<parameters.arch>>.tar.gz
       - persist_to_workspace:
           root: workspace
           paths:
