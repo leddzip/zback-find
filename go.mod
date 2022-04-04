@@ -1,4 +1,4 @@
-module github.com/leddzip/back-find-cli
+module github.com/leddzip/zback-find
 
 go 1.16
 

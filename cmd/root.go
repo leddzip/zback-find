@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/leddzip/back-find-cli/internal/service"
+	"github.com/leddzip/zback-find/internal/service"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -20,7 +20,7 @@ var rootCmd = &cobra.Command{
 If multiple candidate exist, it will always stop at the closer to the base 
 directory (default to the current directory)`,
 	Args: cobra.ExactArgs(1),
-	
+
 	Run: func(cmd *cobra.Command, args []string) {
 		filePresence, err := service.FindFileBetween(args[0], From, BackTo)
 		if err != nil {

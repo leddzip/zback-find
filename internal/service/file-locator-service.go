@@ -2,7 +2,7 @@ package service
 
 import (
 	"errors"
-	"github.com/leddzip/back-find-cli/internal/domain"
+	"github.com/leddzip/zback-find/internal/domain"
 	"path"
 	"path/filepath"
 	"strings"
