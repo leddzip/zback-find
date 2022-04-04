@@ -83,7 +83,7 @@ jobs:
       - run: |
           export GH_TOKEN=$ALBERT_BOT_GH_TOKEN_SCOPE_REPO_BACK_FIND
           gh release create $CIRCLE_TAG --notes "Automatic release"
-          gh release upload $CIRCLE_TAG /tmp/workspace/zback-find* 
+          gh release upload $CIRCLE_TAG /tmp/project/workspace/zback-find* 
 
 #==============================================================================
 # Workflows
