@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/leddzip/zback-find/internal/service"
+	"github.com/leddzip/back-finder"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -22,7 +22,7 @@ directory (default to the current directory)`,
 	Args: cobra.ExactArgs(1),
 
 	Run: func(cmd *cobra.Command, args []string) {
-		filePresence, err := service.FindFileBetween(args[0], From, BackTo)
+		filePresence, err := back_finder.FindFileBetween(args[0], From, BackTo)
 		if err != nil {
 			os.Exit(1)
 		}

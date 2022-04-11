@@ -6,7 +6,7 @@ version: 2.1
 executors:
   go:
     docker:
-      - image: cimg/go:1.16
+      - image: cimg/go:1.18
         auth:
           username: $MY_CIRCLECI_DOCKERHUB_USERNAME
           password: $MY_CIRCLECI_DOCKERHUB_PASSWORD
